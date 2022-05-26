@@ -1,11 +1,8 @@
-//
-// Created by VipSo on 5/26/2022.
-//
+#include<stdio.h>
+#include<conio.h>
+#include "queue.h"
 
-#include <stdio.h>
+void main()
+{
 
-int main(){
-
-    printf("Que Seja Feita a Luz!");
-    return 0;
-}
+} 
