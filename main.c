@@ -21,13 +21,7 @@ void main() {
     // Criar Processos, para depois Alocar na Fila.
     criarProcessos(processos);
 
-    printf("Processo\t| Inicio\t| T. de Servico\t|\n");
-    printf("-------------------------------------------------\n");
-    
-    for(int i = 0; i < MAX_PROCESSOS; i++) {
-        printf("Processo #%ld\t| %d\t\t| %d\t\t|\n", processos[i]->PID, processos[i]->inicio, processos[i]->servico_restante);
-    }
-    printf("\n\n");
+    tabelaDeProcessos(processos, MAX_PROCESSOS);
 
     printf("Fila de prioridade alta:\n");
     mostrarFila(fila_alta);
@@ -51,8 +45,13 @@ void main() {
             // Se o tempo de ínicio for igual ao t atual,
             // coloca o processo na fila de prioridade alta
             if( proc->inicio == t ) {
-                printf("[%04d] Processo #%ld iniciado (Entrou na fila de alta prioridade)\n", t, proc->PID);
-                push(fila_alta, proc);
+                if( proc_atual == (Processo*) NULL ) {
+                    proc_atual = proc;
+                    printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico_restante);
+                } else {
+                    printf("[%04d] Processo #%ld iniciado (Entrou na fila de alta prioridade)\n", t, proc->PID);
+                    push(fila_alta, proc);
+                }
             }
         }
 
@@ -91,5 +90,3 @@ void main() {
     }
     printf("Fim do Escalonador\n");
 } 
-
-

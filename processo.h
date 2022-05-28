@@ -12,7 +12,7 @@ typedef enum {HOLD, READY, RUNNING, WAITING, FINISHED} STATUS;
 typedef enum {ALTA, BAIXA, IO} PRIORIDADE;
 
 //Tipagem dos IO
-typedef enum {DISCO,FITA_MAGNETICA,IMPRESSORA} TIPO_IO;
+typedef enum {DISCO, FITA_MAGNETICA, IMPRESSORA} TIPO_IO;
 typedef struct INOUT {
     TIPO_IO tipo_io;
     int inicio;
@@ -53,4 +53,14 @@ void criarProcessos(Processo **processos) {
 
         processos[i] = proc;
     }
+}
+
+void tabelaDeProcessos(Processo **processos, int n) {
+    printf("Processo\t| Inicio\t| T. de Servico\t|\n");
+    printf("-------------------------------------------------\n");
+    
+    for(int i = 0; i < n; i++) {
+        printf("Processo #%ld\t| %d\t\t| %d\t\t|\n", processos[i]->PID, processos[i]->inicio, processos[i]->servico_restante);
+    }
+    printf("\n\n");
 }

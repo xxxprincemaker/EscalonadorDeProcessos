@@ -85,12 +85,9 @@ void mostrarFila(struct Fila *fila){
 
     printf("| ");
 
-    for ( cont=0, i = fila->frente; cont < fila->capacidade; cont++){
+    for ( i = 0; i < fila->tamanho; i++){
 
-        printf("Processo #%ld | ", fila->array[i++]->PID);
-
-        if (i == fila->capacidade)
-            i=0;
+        printf("Processo #%ld | ", fila->array[i]->PID);
 
     }
 	printf("\n\n");
