@@ -2,15 +2,18 @@
 #include<stdio.h>
 //#include<conio.h>
 #include "fila.h"
+#include <locale.h>
 
 void main() {
+    setlocale(LC_ALL, "Portuguese_Brasil");
+
     Processo **processos = malloc(sizeof(Processo*) * MAX_PROCESSOS);
 
-    Processo *proc_atual = (Processo *) NULL; // Processo rodando atualmente na CPU
+    Processo *proc_atual = (Processo *) NULL;   // Processo rodando atualmente na CPU
 
-    Fila *fila_alta = criaFila(MAX_PROCESSOS); // Fila de prioridade alta
+    Fila *fila_alta = criaFila(MAX_PROCESSOS);  // Fila de prioridade alta
     Fila *fila_baixa = criaFila(MAX_PROCESSOS); // Fila de prioridade baixa
-    Fila *fila_io = criaFila(MAX_PROCESSOS); // Fila de IO
+    Fila *fila_io = criaFila(MAX_PROCESSOS);    // Fila de IO
 
     int t = 0; // Instante atual
     int t_quantum = 0; // Tempo passado no quantum atual
@@ -18,20 +21,9 @@ void main() {
     srand(time(NULL));
 
     // Criar Processos, para depois Alocar na Fila.
-    for(int i = 0; i < MAX_PROCESSOS; i++) {
-        Processo* proc = (Processo*)malloc(sizeof(Processo));
+    criarProcessos(processos);
 
-        proc->PID = i;
-        proc->PPID = -1;
-        proc->prioridade = ALTA;
-        proc->status = HOLD;
-        proc->inicio = i == 0 ? 0 : rand() % 10;
-        proc->servico_restante = rand() % 5 + 1;
-        
-        processos[i] = proc;
-    }
-
-    printf("Processo\t| Início\t| T. de Serviço\t|\n");
+    printf("Processo\t| Inicio\t| T. de Servico\t|\n");
     printf("-------------------------------------------------\n");
     
     for(int i = 0; i < MAX_PROCESSOS; i++) {
@@ -47,6 +39,8 @@ void main() {
     mostrarFila(fila_io);
 
     // TODO - Adicionar processos com IO
+
+
     // Para de rodar o loop quando todas as filas estiverem vazias
     // Não verifica as filas no instante t = 0, quando todas estão vazias
     while (!processosAcabaram(processos, MAX_PROCESSOS)) {

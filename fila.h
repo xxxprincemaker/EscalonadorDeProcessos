@@ -49,7 +49,7 @@ void push(Fila* fila, Processo* item)
 // Função para retirar um objeto da Fila
 Processo* pop(Fila* fila)
 {
-    if (isEmpty(fila)) return INT_MIN;
+    if (isEmpty(fila)) return NULL;
 
     Processo* item = fila->array[fila->frente];
     fila->frente = (fila->frente + 1) % fila->capacidade;
@@ -61,7 +61,7 @@ Processo* pop(Fila* fila)
 // Funcao para pegar o primeiro item da fila
 Processo* front(Fila* fila)
 {
-    if (isEmpty(fila)) return INT_MIN;
+    if (isEmpty(fila)) return NULL;
 
     return fila->array[fila->frente];
 }
@@ -69,7 +69,7 @@ Processo* front(Fila* fila)
 // Funcao para pegar o ultimo item da fila
 Processo* rear(Fila* fila)
 {
-    if (isEmpty(fila)) return INT_MIN;
+    if (isEmpty(fila)) return NULL;
     
     return fila->array[fila->atras];
 }
@@ -95,5 +95,4 @@ void mostrarFila(struct Fila *fila){
     }
 	printf("\n\n");
 
-    return;
 }

@@ -39,3 +39,18 @@ int processosAcabaram(Processo** processos, int n) {
     }
     return 1;
 }
+
+void criarProcessos(Processo **processos) {
+    for (int i = 0; i < MAX_PROCESSOS; i++) {
+        Processo *proc = (Processo *) malloc(sizeof(Processo));
+
+        proc->PID = i;
+        proc->PPID = -1;
+        proc->prioridade = ALTA;
+        proc->status = HOLD;
+        proc->inicio = i == 0 ? 0 : rand() % 10;
+        proc->servico_restante = rand() % 5 + 1;
+
+        processos[i] = proc;
+    }
+}
