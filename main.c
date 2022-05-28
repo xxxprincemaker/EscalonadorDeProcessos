@@ -2,10 +2,8 @@
 #include<stdio.h>
 //#include<conio.h>
 #include "fila.h"
-#include <locale.h>
 
 void main() {
-    setlocale(LC_ALL, "Portuguese_Brasil");
 
     Processo **processos = malloc(sizeof(Processo*) * MAX_PROCESSOS);
 
