@@ -78,16 +78,22 @@ void mostrarFila(struct Fila *fila){
 
 	int cont, i;
 
+    if (isEmpty(fila)) {
+        printf("| Fila vazia |\n\n");
+        return;
+    }
+
     printf("| ");
 
-	for ( cont=0, i = fila->frente; cont < fila->capacidade; cont++){
+    for ( cont=0, i = fila->frente; cont < fila->capacidade; cont++){
 
-		printf("Processo #%ld | ", fila->array[i++]->PID);
+        printf("Processo #%ld | ", fila->array[i++]->PID);
 
-		if (i == fila->capacidade)
-			i=0;
+        if (i == fila->capacidade)
+            i=0;
 
-	}
+    }
 	printf("\n\n");
 
+    return;
 }
