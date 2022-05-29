@@ -46,7 +46,7 @@ void main() {
         printf("Fila de IO de Impressora:\n");
         mostrarFila(fila_impressora);
 
-        printf("Processo na CPU: Processo #%ld\n\n", proc_atual != (Processo*) NULL ? proc_atual->PID : -1);
+        printf("Processo na CPU: Processo #%ld\n\n", (proc_atual != (Processo*) NULL ? proc_atual->PID : -1) );
         // Percorre todos os processos procurando se existe um processo que inicia no instante t atual
         for(int i = 0; i < MAX_PROCESSOS; i++){
 
@@ -73,7 +73,7 @@ void main() {
         }
         while( !isEmpty(fila_fita) && front(fila_fita)->io.tempo_restante == 0 )  {
             Processo* proc = pop(fila_fita);
-            printf("[%04d] Processo #%ld finalizou IO de Fita Magnética (Entrou na fila de alta prioridade)\n", t, proc->PID);
+            printf("[%04d] Processo #%ld finalizou IO de Fita Magnetica (Entrou na fila de alta prioridade)\n", t, proc->PID);
             push(fila_alta, proc);
         }
         while( !isEmpty(fila_impressora) && front(fila_impressora)->io.tempo_restante == 0 )  {
@@ -140,7 +140,7 @@ void main() {
             printf("[%04d] CPU oceosa\n", t);
         }
         sleep(1);
-        printf("\033[J");
+        printf("\033 ");
     }
     printf("Fim do Escalonador\n");
 } 

@@ -8,11 +8,17 @@
 #define TEMPO_IMPRESSORA 4
 
 // Enumeração dos status para cada processo
-typedef enum {HOLD, READY, RUNNING, WAITING, FINISHED} STATUS;
-typedef enum {ALTA, BAIXA, IO} PRIORIDADE;
+typedef enum {
+    HOLD, READY, RUNNING, WAITING, FINISHED
+} STATUS;
+typedef enum {
+    ALTA, BAIXA, IO
+} PRIORIDADE;
 
 //Tipagem dos IO
-typedef enum {DISCO, FITA_MAGNETICA, IMPRESSORA} TIPO_IO;
+typedef enum {
+    NAO_POSSUI, DISCO, FITA_MAGNETICA, IMPRESSORA
+} TIPO_IO;
 typedef struct INOUT {
     TIPO_IO tipo_io;
     int inicio;
@@ -32,12 +38,12 @@ typedef struct Processo {
 } Processo;
 
 
-int processosAcabaram(Processo** processos, int n) {
-    
-    for(int i = 0; i < n; i++) {
+int processosAcabaram(Processo **processos, int n) {
+
+    for (int i = 0; i < n; i++) {
         Processo *proc = processos[i];
 
-        if(proc->servico != proc->tempo_passado) return 0;
+        if (proc->servico != proc->tempo_passado) return 0;
     }
     return 1;
 }
@@ -54,23 +60,22 @@ void criarProcessos(Processo **processos) {
         proc->servico = rand() % 5 + 3;
         proc->tempo_passado = 0;
 
-        if(rand() % 2) {
+        if (rand() % 2) {
             int r = rand();
-            if(r % 3 == 0) {
+            if (r % 3 == 0) {
                 proc->io.tipo_io = DISCO;
                 proc->io.tempo_restante = TEMPO_DISCO;
-            }
-            else if (r % 3 == 1) {
+            } else if (r % 3 == 1) {
                 proc->io.tipo_io = FITA_MAGNETICA;
                 proc->io.tempo_restante = TEMPO_FITA_MAGNETICA;
-            }
-            else {
+            } else {
                 proc->io.tipo_io = IMPRESSORA;
                 proc->io.tempo_restante = TEMPO_IMPRESSORA;
             }
 
-            proc->io.inicio = (rand() % (proc->servico-1)) + 1;
+            proc->io.inicio = (rand() % (proc->servico - 1)) + 1;
         } else {
+            proc->io.tipo_io = NAO_POSSUI;
             proc->io.inicio = -1;
         }
 
@@ -78,17 +83,34 @@ void criarProcessos(Processo **processos) {
     }
 }
 
+char *tipoIo(Processo *processo) {
+    switch (processo->io.tipo_io) {
+
+        case DISCO:
+            return "Disco Rig.";
+            break;
+        case FITA_MAGNETICA:
+            return "Fita Mag.";
+            break;
+        case IMPRESSORA:
+            return "Impressora";
+            break;
+        default:
+            return "Nao Possui";
+            break;
+    }
+}
+
 void tabelaDeProcessos(Processo **processos, int n) {
-    printf("Processo\t| Inicio\t| T. de Servico\t| Tipo de IO\t| Início do IO\t|\n");
+    printf("Processo\t| Inicio\t| T. de Servico\t| Tipo de IO\t| Inicio do IO\t|\n");
     printf("---------------------------------------------------------------------------------\n");
-    
-    for(int i = 0; i < n; i++) {
-        if ( processos[i]->io.tipo_io == DISCO ) 
-            printf("Processo #%ld\t| %d\t\t| %d\t\t| %s\t\t| %d\t\t|\n", processos[i]->PID, processos[i]->inicio, processos[i]->servico, "Disco", processos[i]->io.inicio);
-        else if ( processos[i]->io.tipo_io == FITA_MAGNETICA ) 
-            printf("Processo #%ld\t| %d\t\t| %d\t\t| %s| %d\t\t|\n", processos[i]->PID, processos[i]->inicio, processos[i]->servico, "Fita Magnética", processos[i]->io.inicio);
-        else 
-            printf("Processo #%ld\t| %d\t\t| %d\t\t| %s\t| %d\t\t|\n", processos[i]->PID, processos[i]->inicio, processos[i]->servico, "Impressora", processos[i]->io.inicio);
+
+    for (int i = 0; i < n; i++) {
+
+        printf("Processo #%ld\t| %d\t\t| %d\t\t| %s\t| %d\t\t|\n", processos[i]->PID, processos[i]->inicio,
+               processos[i]->servico,
+               tipoIo(processos[i]), processos[i]->io.inicio);
+
     }
     printf("\n\n");
 }
