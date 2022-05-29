@@ -24,18 +24,7 @@ void main() {
     // Criar Processos, para depois Alocar na Fila.
     criarProcessos(processos);
 
-    tabelaDeProcessos(processos, MAX_PROCESSOS);
-
-    printf("Fila de prioridade alta:\n");
-    mostrarFila(fila_alta);
-    printf("Fila de prioridade baixa:\n");
-    mostrarFila(fila_baixa);
-    printf("Fila de IO de Disco:\n");
-    mostrarFila(fila_disco);
-    printf("Fila de IO de Fita:\n");
-    mostrarFila(fila_fita);
-    printf("Fila de IO de Impressora:\n");
-    mostrarFila(fila_impressora);
+    
     
 
     // TODO - Adicionar processos com IO
@@ -44,6 +33,20 @@ void main() {
     // Para de rodar o loop quando todas as filas estiverem vazias
     // Não verifica as filas no instante t = 0, quando todas estão vazias
     while (!processosAcabaram(processos, MAX_PROCESSOS)) {
+        tabelaDeProcessos(processos, MAX_PROCESSOS);
+
+        printf("Fila de prioridade alta:\n");
+        mostrarFila(fila_alta);
+        printf("Fila de prioridade baixa:\n");
+        mostrarFila(fila_baixa);
+        printf("Fila de IO de Disco:\n");
+        mostrarFila(fila_disco);
+        printf("Fila de IO de Fita:\n");
+        mostrarFila(fila_fita);
+        printf("Fila de IO de Impressora:\n");
+        mostrarFila(fila_impressora);
+
+        printf("Processo na CPU: Processo #%ld\n\n", proc_atual != (Processo*) NULL ? proc_atual->PID : -1);
         // Percorre todos os processos procurando se existe um processo que inicia no instante t atual
         for(int i = 0; i < MAX_PROCESSOS; i++){
 
@@ -110,15 +113,18 @@ void main() {
         }
 
         for( int i = 0; i < fila_disco->tamanho; i++ ) {
-            fila_disco->array[i]->io.tempo_restante--;
+            int fila_pos = (fila_disco->frente + i) % fila_disco->capacidade;
+            fila_disco->array[fila_pos]->io.tempo_restante--;
         }
 
         for( int i = 0; i < fila_fita->tamanho; i++ ) {
-            fila_fita->array[i]->io.tempo_restante--;
+            int fila_pos = (fila_fita->frente + i) % fila_fita->capacidade;
+            fila_fita->array[fila_pos]->io.tempo_restante--;
         }
 
         for( int i = 0; i < fila_impressora->tamanho; i++ ) {
-            fila_impressora->array[i]->io.tempo_restante--;
+            int fila_pos = (fila_impressora->frente + i) % fila_impressora->capacidade;
+            fila_impressora->array[fila_pos]->io.tempo_restante--;
         }
 
         t++;
@@ -134,6 +140,7 @@ void main() {
             printf("[%04d] CPU oceosa\n", t);
         }
         sleep(1);
+        printf("\033[J");
     }
     printf("Fim do Escalonador\n");
 } 

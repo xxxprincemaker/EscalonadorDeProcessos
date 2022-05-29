@@ -51,7 +51,7 @@ void criarProcessos(Processo **processos) {
         proc->prioridade = ALTA;
         proc->status = HOLD;
         proc->inicio = i == 0 ? 0 : rand() % 10;
-        proc->servico = rand() % 5 + 1;
+        proc->servico = rand() % 5 + 3;
         proc->tempo_passado = 0;
 
         if(rand() % 2) {
