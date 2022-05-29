@@ -74,8 +74,7 @@ void criarProcessos(Processo **processos) {
             }
 
             proc->io.inicio = (rand() % (proc->servico - 1)) + 1;
-        }
-        else {
+        } else {
             proc->io.tipo_io = NAO_POSSUI;
             proc->io.inicio = -1;
         }
@@ -102,16 +101,55 @@ char *tipoIo(Processo *processo) {
     }
 }
 
+char *tipoStatus(Processo *processo) {
+    switch (processo->status) {
+
+        case HOLD:
+            return "HOLD";
+            break;
+        case READY:
+            return "READY";
+            break;
+        case RUNNING:
+            return "RUNNING";
+            break;
+        case WAITING:
+            return "WAITING";
+            break;
+        case FINISHED:
+            return "FINISHED";
+            break;
+    }
+}
+
+char *tipoPrioridade(Processo *processo) {
+    switch (processo->prioridade) {
+        case ALTA:
+            return "ALTA";
+            break;
+        case BAIXA:
+            return "ALTA";
+            break;
+        case IO:
+            return "I/O";
+            break;
+    }
+}
+
 void tabelaDeProcessos(Processo **processos, int n) {
-    printf("Processo\t| Inicio\t| T. de Servico\t| Tipo de IO\t| Inicio do IO\t|\n");
-    printf("---------------------------------------------------------------------------------\n");
-    char tempoinicio[20];
+    printf("Processo\t| Inicio\t| T. de Servico\t| Tipo de IO\t| Inicio do IO\t| STATUS \t| PPID \t| PRIRD.|\n");
+    printf("-----------------------------------------------------------------------------------------------------------------\n");
+    char tempoinicio[5];
+    char ppid[5];
 
     for (int i = 0; i < n; i++) {
         sprintf(tempoinicio, "%d", processos[i]->io.inicio);
-        printf("Processo #%ld\t| %d\t\t| %d\t\t| %s\t| %s\t\t|\n", processos[i]->PID, processos[i]->inicio,
+        sprintf(ppid, "ld", processos[i]->PPID);
+        printf("Processo #%ld\t| %d\t\t| %d\t\t| %s\t| %s\t\t| %s\t\t| %s\t| %s\t|\n", processos[i]->PID,
+               processos[i]->inicio,
                processos[i]->servico,
-               tipoIo(processos[i]), processos[i]->io.inicio == -1 ? "-" : tempoinicio);
+               tipoIo(processos[i]), (processos[i]->io.inicio == -1 ? "-" : tempoinicio), tipoStatus(processos[i]),
+               (processos[i]->PPID == -1 ? "-" : ppid), tipoPrioridade(processos[i]));
 
     }
     printf("\n\n");

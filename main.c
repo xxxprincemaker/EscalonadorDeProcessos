@@ -28,11 +28,6 @@ void main() {
     // Criar Processos, para depois Alocar na Fila.
     criarProcessos(processos);
 
-    
-    
-
-    // TODO - Adicionar processos com IO
-
 
     // Para de rodar o loop quando todas as filas estiverem vazias
     // Não verifica as filas no instante t = 0, quando todas estão vazias
@@ -62,9 +57,11 @@ void main() {
                 if( proc_atual == (Processo*) NULL ) {
                     proc_atual = proc;
                     printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
+                    processos[i]->status = READY;
                     t_quantum = 0;
                 } else {
                     printf("[%04d] Processo #%ld iniciado (Entrou na fila de alta prioridade)\n", t, proc->PID);
+                    processos[i]->status = HOLD;
                     push(fila_alta, proc);
                 }
             }
@@ -145,11 +142,11 @@ void main() {
             printf("[%04d] CPU oceosa\n", t);
         }
         sleep(1);
-        printf("\033[2J");
+        printf("\033 ");
     }
     printf("Fim do Escalonador\n");
 
-    printf("Turnaround de cada processo:\n");
+    printf("\n\nTurnaround de cada processo:\n");
     for(int i = 0; i < MAX_PROCESSOS; i++) {
         Processo* proc = processos[i];
         printf("Processo #%ld - %ds\n", proc->PID, t_finalizacoes[i] - proc->inicio);
