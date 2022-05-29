@@ -2,7 +2,7 @@
 #include<time.h>//necessário p/ função time()
 
 #define QUANTUM 2
-#define MAX_PROCESSOS 5
+#define MAX_PROCESSOS 3
 #define TEMPO_DISCO 2
 #define TEMPO_FITA_MAGNETICA 3
 #define TEMPO_IMPRESSORA 4
@@ -125,10 +125,10 @@ char *tipoStatus(Processo *processo) {
 char *tipoPrioridade(Processo *processo) {
     switch (processo->prioridade) {
         case ALTA:
-            return "ALTA";
+            return "ALTA  ";
             break;
         case BAIXA:
-            return "BAIXA";
+            return "BAIXA ";
             break;
         case IO:
             return "I/O";
@@ -153,7 +153,7 @@ void tabelaDeProcessos(Processo **processos, int n) {
     for (int i = 0; i < n; i++) {
         sprintf(tempoinicio, "%d", processos[i]->io.inicio);
         sprintf(ppid, "%ld", processos[i]->PPID);
-        printf("Processo #%ld\t| %d\t\t| %d\t\t| %s\t| %s\t\t| %s\t| %s\t|\n", processos[i]->PID,
+        printf("Processo #%ld\t| %d\t\t| %d\t\t| %s\t| %s\t\t| %s\t| %s|\n", processos[i]->PID,
                processos[i]->inicio,
                processos[i]->servico,
                tipoIo(processos[i]), (processos[i]->io.inicio == -1 ? "-" : tempoinicio), tipoStatus(processos[i]),
