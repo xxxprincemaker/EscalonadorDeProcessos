@@ -57,11 +57,12 @@ void main() {
                 if( proc_atual == (Processo*) NULL ) {
                     proc_atual = proc;
                     printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
-                    processos[i]->status = READY;
+                    trocarStatus(processos, proc_atual, READY);
                     t_quantum = 0;
                 } else {
                     printf("[%04d] Processo #%ld iniciado (Entrou na fila de alta prioridade)\n", t, proc->PID);
-                    processos[i]->status = HOLD;
+                    trocarStatus(processos, proc_atual, HOLD);
+                    trocarPrioridade(processos, proc_atual, ALTA);
                     push(fila_alta, proc);
                 }
             }
@@ -70,21 +71,25 @@ void main() {
         while( !isEmpty(fila_disco) && front(fila_disco)->io.tempo_restante == 0 ) {
             Processo* proc = pop(fila_disco);
             printf("[%04d] Processo #%ld finalizou IO de Disco (Entrou na fila de baixa prioridade)\n", t, proc->PID);
+            trocarPrioridade(processos, proc_atual, BAIXA);
             push(fila_baixa, proc);
         }
         while( !isEmpty(fila_fita) && front(fila_fita)->io.tempo_restante == 0 )  {
             Processo* proc = pop(fila_fita);
             printf("[%04d] Processo #%ld finalizou IO de Fita Magnetica (Entrou na fila de alta prioridade)\n", t, proc->PID);
+            trocarPrioridade(processos, proc_atual, ALTA);
             push(fila_alta, proc);
         }
         while( !isEmpty(fila_impressora) && front(fila_impressora)->io.tempo_restante == 0 )  {
             Processo* proc = pop(fila_impressora);
             printf("[%04d] Processo #%ld finalizou IO de Impressora (Entrou na fila de alta prioridade)\n", t, proc->PID);
+            trocarPrioridade(processos, proc_atual, ALTA);
             push(fila_alta, proc);
         }
 
         if( proc_atual != (Processo *) NULL && proc_atual->tempo_passado == proc_atual->io.inicio ) {
             printf("[%04d] Processo #%ld iniciou IO (Entrou na fila de IO)\n", t, proc_atual->PID);
+            trocarStatus(processos, proc_atual, WAITING);
             if ( proc_atual->io.tipo_io == DISCO ) push(fila_disco, proc_atual);
             else if ( proc_atual->io.tipo_io == FITA_MAGNETICA ) push(fila_fita, proc_atual);
             else push(fila_impressora, proc_atual);
@@ -96,6 +101,7 @@ void main() {
         if ( t_quantum == QUANTUM ) {
             if ( proc_atual != (Processo *) NULL ) {
                 printf("[%04d] Processo #%ld saiu da CPU (Entrou na fila de baixa prioridade)\n", t, proc_atual->PID);
+                trocarPrioridade(processos, proc_atual, BAIXA);
                 push(fila_baixa, proc_atual);
                 proc_atual = (Processo*) NULL;
             }
@@ -107,9 +113,13 @@ void main() {
             if( !isEmpty(fila_alta) ) {
                 proc_atual = pop(fila_alta);
                 printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
+                trocarStatus(processos, proc_atual, RUNNING);
+                trocarPrioridade(processos, proc_atual, ALTA);
             } else if ( !isEmpty(fila_baixa) ) {
                 proc_atual = pop(fila_baixa);
                 printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
+                trocarStatus(processos, proc_atual, RUNNING);
+                trocarPrioridade(processos, proc_atual, BAIXA);
             }
         }
 
@@ -134,6 +144,7 @@ void main() {
             proc_atual->tempo_passado++;
             if( proc_atual->tempo_passado == proc_atual->servico ) { 
                 printf("[%04d] Processo #%ld finalizou\n", t, proc_atual->PID);
+                trocarStatus(processos, proc_atual, FINISHED);
                 t_finalizacoes[proc_atual->PID] = t;
                 proc_atual = (Processo*) NULL;
                 t_quantum = 0; 
@@ -144,6 +155,8 @@ void main() {
         sleep(1);
         printf("\033 ");
     }
+    tabelaDeProcessos(processos, MAX_PROCESSOS);
+
     printf("Fim do Escalonador\n");
 
     printf("\n\nTurnaround de cada processo:\n");
