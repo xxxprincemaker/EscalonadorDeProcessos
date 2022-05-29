@@ -16,6 +16,10 @@ void main() {
     Fila *fila_fita = criaFila(MAX_PROCESSOS);    // Fila de IO de fita magnética
     Fila *fila_impressora = criaFila(MAX_PROCESSOS);    // Fila de IO de impressora
 
+    // Tempos de finalizações de cada processo
+    // Usados para calcular o turnaround de cada processo
+    int* t_finalizacoes = malloc(sizeof(int) * MAX_PROCESSOS);
+
     int t = 0; // Instante atual
     int t_quantum = 0; // Tempo passado no quantum atual
 
@@ -133,6 +137,7 @@ void main() {
             proc_atual->tempo_passado++;
             if( proc_atual->tempo_passado == proc_atual->servico ) { 
                 printf("[%04d] Processo #%ld finalizou\n", t, proc_atual->PID);
+                t_finalizacoes[proc_atual->PID] = t;
                 proc_atual = (Processo*) NULL;
                 t_quantum = 0; 
             }
@@ -140,7 +145,13 @@ void main() {
             printf("[%04d] CPU oceosa\n", t);
         }
         sleep(1);
-        printf("\033[J");
+        printf("\033[2J");
     }
     printf("Fim do Escalonador\n");
+
+    printf("Turnaround de cada processo:\n");
+    for(int i = 0; i < MAX_PROCESSOS; i++) {
+        Processo* proc = processos[i];
+        printf("Processo #%ld - %ds\n", proc->PID, t_finalizacoes[i] - proc->inicio);
+    }
 } 
