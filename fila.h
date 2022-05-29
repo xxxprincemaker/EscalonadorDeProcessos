@@ -60,7 +60,7 @@ Processo* pop(Fila* fila)
 
 // Funcao para pegar o primeiro item da fila
 Processo* front(Fila* fila)
-{
+{   
     if (isEmpty(fila)) return NULL;
 
     return fila->array[fila->frente];
@@ -74,6 +74,7 @@ Processo* rear(Fila* fila)
     return fila->array[fila->atras];
 }
 
+// Função para imprimir a fila
 void mostrarFila(struct Fila *fila){
 
 	int cont, i;
@@ -87,7 +88,7 @@ void mostrarFila(struct Fila *fila){
 
     for ( i = 0; i < fila->tamanho; i++){
 
-        printf("Processo #%ld | ", fila->array[i]->PID);
+        printf("Processo #%ld (%d) | ", fila->array[i]->PID, fila->array[i]->io.tempo_restante);
 
     }
 	printf("\n\n");

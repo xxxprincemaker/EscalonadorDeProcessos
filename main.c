@@ -11,7 +11,10 @@ void main() {
 
     Fila *fila_alta = criaFila(MAX_PROCESSOS);  // Fila de prioridade alta
     Fila *fila_baixa = criaFila(MAX_PROCESSOS); // Fila de prioridade baixa
-    Fila *fila_io = criaFila(MAX_PROCESSOS);    // Fila de IO
+    
+    Fila *fila_disco = criaFila(MAX_PROCESSOS);    // Fila de IO de disco
+    Fila *fila_fita = criaFila(MAX_PROCESSOS);    // Fila de IO de fita magnética
+    Fila *fila_impressora = criaFila(MAX_PROCESSOS);    // Fila de IO de impressora
 
     int t = 0; // Instante atual
     int t_quantum = 0; // Tempo passado no quantum atual
@@ -27,8 +30,13 @@ void main() {
     mostrarFila(fila_alta);
     printf("Fila de prioridade baixa:\n");
     mostrarFila(fila_baixa);
-    printf("Fila de IO:\n");
-    mostrarFila(fila_io);
+    printf("Fila de IO de Disco:\n");
+    mostrarFila(fila_disco);
+    printf("Fila de IO de Fita:\n");
+    mostrarFila(fila_fita);
+    printf("Fila de IO de Impressora:\n");
+    mostrarFila(fila_impressora);
+    
 
     // TODO - Adicionar processos com IO
 
@@ -36,7 +44,6 @@ void main() {
     // Para de rodar o loop quando todas as filas estiverem vazias
     // Não verifica as filas no instante t = 0, quando todas estão vazias
     while (!processosAcabaram(processos, MAX_PROCESSOS)) {
-        
         // Percorre todos os processos procurando se existe um processo que inicia no instante t atual
         for(int i = 0; i < MAX_PROCESSOS; i++){
 
@@ -47,7 +54,8 @@ void main() {
             if( proc->inicio == t ) {
                 if( proc_atual == (Processo*) NULL ) {
                     proc_atual = proc;
-                    printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico_restante);
+                    printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
+                    t_quantum = 0;
                 } else {
                     printf("[%04d] Processo #%ld iniciado (Entrou na fila de alta prioridade)\n", t, proc->PID);
                     push(fila_alta, proc);
@@ -55,30 +63,69 @@ void main() {
             }
         }
 
-        // Se acabou o tempo do quantum atual
-        if (proc_atual != (Processo *) NULL && t_quantum == QUANTUM ) {
-            printf("[%04d] Processo #%ld saiu da CPU (Entrou na fila de baixa prioridade)\n", t, proc_atual->PID);
-            push(fila_baixa, proc_atual);
+        while( !isEmpty(fila_disco) && front(fila_disco)->io.tempo_restante == 0 ) {
+            Processo* proc = pop(fila_disco);
+            printf("[%04d] Processo #%ld finalizou IO de Disco (Entrou na fila de baixa prioridade)\n", t, proc->PID);
+            push(fila_baixa, proc);
+        }
+        while( !isEmpty(fila_fita) && front(fila_fita)->io.tempo_restante == 0 )  {
+            Processo* proc = pop(fila_fita);
+            printf("[%04d] Processo #%ld finalizou IO de Fita Magnética (Entrou na fila de alta prioridade)\n", t, proc->PID);
+            push(fila_alta, proc);
+        }
+        while( !isEmpty(fila_impressora) && front(fila_impressora)->io.tempo_restante == 0 )  {
+            Processo* proc = pop(fila_impressora);
+            printf("[%04d] Processo #%ld finalizou IO de Impressora (Entrou na fila de alta prioridade)\n", t, proc->PID);
+            push(fila_alta, proc);
+        }
+
+        if( proc_atual != (Processo *) NULL && proc_atual->tempo_passado == proc_atual->io.inicio ) {
+            printf("[%04d] Processo #%ld iniciou IO (Entrou na fila de IO)\n", t, proc_atual->PID);
+            if ( proc_atual->io.tipo_io == DISCO ) push(fila_disco, proc_atual);
+            else if ( proc_atual->io.tipo_io == FITA_MAGNETICA ) push(fila_fita, proc_atual);
+            else push(fila_impressora, proc_atual);
+            
             proc_atual = (Processo*) NULL;
+        }
+
+        // Se acabou o tempo do quantum atual
+        if ( t_quantum == QUANTUM ) {
+            if ( proc_atual != (Processo *) NULL ) {
+                printf("[%04d] Processo #%ld saiu da CPU (Entrou na fila de baixa prioridade)\n", t, proc_atual->PID);
+                push(fila_baixa, proc_atual);
+                proc_atual = (Processo*) NULL;
+            }
             t_quantum = 0;
         }
         
-        if( proc_atual == (Processo*) NULL ) {
+        if( proc_atual == (Processo *) NULL && t_quantum == 0 ) {
             
             if( !isEmpty(fila_alta) ) {
                 proc_atual = pop(fila_alta);
-                printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico_restante);
+                printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
             } else if ( !isEmpty(fila_baixa) ) {
                 proc_atual = pop(fila_baixa);
-                printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico_restante);
+                printf("[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
             }
+        }
+
+        for( int i = 0; i < fila_disco->tamanho; i++ ) {
+            fila_disco->array[i]->io.tempo_restante--;
+        }
+
+        for( int i = 0; i < fila_fita->tamanho; i++ ) {
+            fila_fita->array[i]->io.tempo_restante--;
+        }
+
+        for( int i = 0; i < fila_impressora->tamanho; i++ ) {
+            fila_impressora->array[i]->io.tempo_restante--;
         }
 
         t++;
         t_quantum++;
         if( proc_atual != (Processo*) NULL ) {
-            proc_atual->servico_restante--;
-            if( proc_atual->servico_restante == 0 ) { 
+            proc_atual->tempo_passado++;
+            if( proc_atual->tempo_passado == proc_atual->servico ) { 
                 printf("[%04d] Processo #%ld finalizou\n", t, proc_atual->PID);
                 proc_atual = (Processo*) NULL;
                 t_quantum = 0; 
