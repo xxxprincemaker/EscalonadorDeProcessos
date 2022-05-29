@@ -128,7 +128,7 @@ char *tipoPrioridade(Processo *processo) {
             return "ALTA";
             break;
         case BAIXA:
-            return "ALTA";
+            return "BAIXA";
             break;
         case IO:
             return "I/O";
@@ -136,20 +136,12 @@ char *tipoPrioridade(Processo *processo) {
     }
 }
 
-void trocarStatus(Processo **processos, Processo *processo, STATUS status){
-    for (int i = 0; i < MAX_PROCESSOS; i++){
-        if (processos[i]->PID == processo->PID){
-            processos[i]->status = status;
-        }
-    }
+void trocarStatus(Processo *processo, STATUS status){
+    processo->status = status;
 }
 
-void trocarPrioridade(Processo **processos, Processo *processo, PRIORIDADE prioridade){
-    for (int i = 0; i < MAX_PROCESSOS; i++){
-        if (processos[i]->PID == processo->PID){
-            processos[i]->prioridade = prioridade;
-        }
-    }
+void trocarPrioridade(Processo *processo, PRIORIDADE prioridade){
+    processo->prioridade = prioridade;
 }
 
 void tabelaDeProcessos(Processo **processos, int n) {
@@ -160,7 +152,7 @@ void tabelaDeProcessos(Processo **processos, int n) {
 
     for (int i = 0; i < n; i++) {
         sprintf(tempoinicio, "%d", processos[i]->io.inicio);
-        sprintf(ppid, "ld", processos[i]->PPID);
+        sprintf(ppid, "%ld", processos[i]->PPID);
         printf("Processo #%ld\t| %d\t\t| %d\t\t| %s\t| %s\t\t| %s\t| %s\t|\n", processos[i]->PID,
                processos[i]->inicio,
                processos[i]->servico,
