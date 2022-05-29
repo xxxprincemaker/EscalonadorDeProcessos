@@ -89,7 +89,7 @@ void mostrarFila(struct Fila *fila){
     for ( i = 0; i < fila->tamanho; i++){
 
         int fila_pos = (fila->frente + i) % fila->capacidade;
-        printf("Processo #%ld (%d) | ", fila->array[fila_pos]->PID, fila->array[fila_pos]->io.tempo_restante);
+        printf("Processo #%ld | ", fila->array[fila_pos]->PID);
 
     }
 	printf("\n\n");

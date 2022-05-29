@@ -2,7 +2,7 @@
 #include<time.h>//necessário p/ função time()
 
 #define QUANTUM 2
-#define MAX_PROCESSOS 3
+#define MAX_PROCESSOS 5
 #define TEMPO_DISCO 2
 #define TEMPO_FITA_MAGNETICA 3
 #define TEMPO_IMPRESSORA 4
@@ -145,15 +145,15 @@ void trocarPrioridade(Processo *processo, PRIORIDADE prioridade){
 }
 
 void tabelaDeProcessos(Processo **processos, int n) {
-    printf("Processo\t| Inicio\t| T. de Servico\t| Tipo de IO\t| Inicio do IO\t| STATUS \t| PRIRD.|\n");
-    printf("---------------------------------------------------------------------------------------------------------\n");
+    printf("\033[34mProcesso\t| Inicio\t| T. de Servico\t| Tipo de IO\t| Inicio do IO\t| STATUS \t| PRIRD.|\033[0m\n");
+    printf("\033[34m---------------------------------------------------------------------------------------------------------\033[0m\n");
     char tempoinicio[5];
     char ppid[5];
 
     for (int i = 0; i < n; i++) {
         sprintf(tempoinicio, "%d", processos[i]->io.inicio);
         sprintf(ppid, "%ld", processos[i]->PPID);
-        printf("Processo #%ld\t| %d\t\t| %d\t\t| %s\t| %s\t\t| %s\t| %s|\n", processos[i]->PID,
+        printf("\033[33mProcesso #%ld\t\033[34m|\033[0m %d\t\t\033[34m|\033[0m %d\t\t\033[34m|\033[0m %s\t\033[34m|\033[0m %s\t\t\033[34m|\033[0m %s\t\033[34m|\033[0m %s\033[34m|\033[0m\n", processos[i]->PID,
                processos[i]->inicio,
                processos[i]->servico,
                tipoIo(processos[i]), (processos[i]->io.inicio == -1 ? "-" : tempoinicio), tipoStatus(processos[i]),

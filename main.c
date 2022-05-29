@@ -46,10 +46,6 @@ void main() {
     // Para de rodar o loop quando todas as filas estiverem vazias
     // Não verifica as filas no instante t = 0, quando todas estão vazias
     while (!processosAcabaram(processos, MAX_PROCESSOS)) {
-        imprimeTabelaEFilas(processos, MAX_PROCESSOS, proc_atual, fila_alta, fila_baixa, fila_disco, fila_fita, fila_impressora);
-
-        int l = 10;
-        int x = 120;
         // Percorre todos os processos procurando se existe um processo que inicia no instante t atual
         for(int i = 0; i < MAX_PROCESSOS; i++){
 
@@ -60,11 +56,11 @@ void main() {
             if( proc->inicio == t ) {
                 if( proc_atual == (Processo*) NULL ) {
                     proc_atual = proc;
-                    fprintf(log_file, "[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
+                    fprintf(log_file, "\033[34m[%04d]\033[0m Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
                     trocarStatus(proc, RUNNING);
                     t_quantum = 0;
                 } else {
-                    fprintf(log_file, "[%04d] Processo #%ld iniciado (Entrou na fila de alta prioridade)\n", t, proc->PID);
+                    fprintf(log_file, "\033[34m[%04d]\033[0m Processo #%ld iniciado (Entrou na fila de alta prioridade)\n", t, proc->PID);
                     trocarStatus(proc, READY);
                     trocarPrioridade(proc, ALTA);
                     push(fila_alta, proc);
@@ -73,7 +69,7 @@ void main() {
         }
 
         if( proc_atual != (Processo *) NULL && proc_atual->tempo_passado == proc_atual->io.inicio && proc_atual->status != WAITING) {
-            fprintf(log_file, "[%04d] Processo #%ld iniciou IO (Entrou na fila de IO)\n", t, proc_atual->PID);
+            fprintf(log_file, "\033[34m[%04d]\033[0m Processo #%ld iniciou IO (Entrou na fila de IO)\n", t, proc_atual->PID);
             trocarStatus(proc_atual, WAITING);
             if ( proc_atual->io.tipo_io == DISCO ) push(fila_disco, proc_atual);
             else if ( proc_atual->io.tipo_io == FITA_MAGNETICA ) push(fila_fita, proc_atual);
@@ -82,7 +78,7 @@ void main() {
 
         while( !isEmpty(fila_disco) && front(fila_disco)->io.tempo_restante == 0 ) {
             Processo* proc = pop(fila_disco);
-            fprintf(log_file, "[%04d] Processo #%ld finalizou IO de Disco (Entrou na fila de baixa prioridade)\n", t, proc->PID);
+            fprintf(log_file, "\033[34m[%04d]\033[0m Processo #%ld finalizou IO de Disco (Entrou na fila de baixa prioridade)\n", t, proc->PID);
             trocarStatus(proc, READY);
             if( proc_atual == (Processo*) NULL || proc_atual->PID != proc->PID) {
                 trocarPrioridade(proc, BAIXA);
@@ -91,7 +87,7 @@ void main() {
         }
         while( !isEmpty(fila_fita) && front(fila_fita)->io.tempo_restante == 0 )  {
             Processo* proc = pop(fila_fita);
-            fprintf(log_file, "[%04d] Processo #%ld finalizou IO de Fita Magnetica (Entrou na fila de alta prioridade)\n", t, proc->PID);
+            fprintf(log_file, "\033[34m[%04d]\033[0m Processo #%ld finalizou IO de Fita Magnetica (Entrou na fila de alta prioridade)\n", t, proc->PID);
             trocarStatus(proc, READY);
             if( proc_atual == (Processo*) NULL || proc_atual->PID != proc->PID) {
                 trocarPrioridade(proc, ALTA);
@@ -100,7 +96,7 @@ void main() {
         }
         while( !isEmpty(fila_impressora) && front(fila_impressora)->io.tempo_restante == 0 )  {
             Processo* proc = pop(fila_impressora);
-            fprintf(log_file, "[%04d] Processo #%ld finalizou IO de Impressora (Entrou na fila de alta prioridade)\n", t, proc->PID);
+            fprintf(log_file, "\033[34m[%04d]\033[0m Processo #%ld finalizou IO de Impressora (Entrou na fila de alta prioridade)\n", t, proc->PID);
             trocarStatus(proc, READY);
             if( proc_atual == (Processo*) NULL || proc_atual->PID != proc->PID) {
                 trocarPrioridade(proc, ALTA);
@@ -111,7 +107,7 @@ void main() {
         // Se acabou o tempo do quantum atual
         if ( proc_atual != (Processo *) NULL && t_quantum == QUANTUM ) {
             if( proc_atual->status != WAITING ) {
-                fprintf(log_file, "[%04d] Processo #%ld saiu da CPU (Entrou na fila de baixa prioridade)\n", t, proc_atual->PID);
+                fprintf(log_file, "\033[34m[%04d]\033[0m Processo #%ld saiu da CPU (Entrou na fila de baixa prioridade)\n", t, proc_atual->PID);
                 trocarStatus(proc_atual, READY);
                 trocarPrioridade(proc_atual, BAIXA);
                 push(fila_baixa, proc_atual);
@@ -124,12 +120,12 @@ void main() {
             
             if( !isEmpty(fila_alta) ) {
                 proc_atual = pop(fila_alta);
-                fprintf(log_file, "[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
+                fprintf(log_file, "\033[34m[%04d]\033[0m Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
                 trocarStatus(proc_atual, RUNNING);
                 trocarPrioridade(proc_atual, ALTA);
             } else if ( !isEmpty(fila_baixa) ) {
                 proc_atual = pop(fila_baixa);
-                fprintf(log_file, "[%04d] Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
+                fprintf(log_file, "\033[34m[%04d]\033[0m Processo #%ld entrou na CPU [Tempo restante = %d]\n", t, proc_atual->PID, proc_atual->servico - proc_atual->tempo_passado);
                 trocarStatus(proc_atual, RUNNING);
                 trocarPrioridade(proc_atual, BAIXA);
             }
@@ -139,22 +135,24 @@ void main() {
 
         imprimeGrafico(proc_atual, t, MAX_PROCESSOS);
 
+        imprimeTabelaEFilas(processos, MAX_PROCESSOS, proc_atual, fila_alta, fila_baixa, fila_disco, fila_fita, fila_impressora);
+
         t++;
         if( proc_atual != (Processo*) NULL ) t_quantum++;
         if( proc_atual != (Processo*) NULL && proc_atual->status != WAITING ) {
             proc_atual->tempo_passado++;
             if( proc_atual->tempo_passado == proc_atual->servico ) {
-                fprintf(log_file, "[%04d] Processo #%ld finalizou\n", t, proc_atual->PID);
+                fprintf(log_file, "\033[34m[%04d]\033[0m Processo #%ld finalizou\n", t, proc_atual->PID);
                 trocarStatus(proc_atual, FINISHED);
                 t_finalizacoes[proc_atual->PID] = t-1;
                 proc_atual = (Processo*) NULL;
                 t_quantum = 0; 
             }
         } else {
-            fprintf(log_file, "[%04d] CPU oceosa\n", t);
+            fprintf(log_file, "\033[34m[%04d]\033[0m CPU oceosa\n", t);
         }
 
-        imprimeLog(log_file, 3*MAX_PROCESSOS + 15, 120, 0);
+        imprimeLog(log_file, 3*MAX_PROCESSOS + 13, 120, 0);
 
         sleep(1);
         gotoxy(1, 10);
@@ -162,14 +160,14 @@ void main() {
     }
     imprimeFinal(processos, MAX_PROCESSOS, t_finalizacoes);
 
-    imprimeLog(log_file, 3*MAX_PROCESSOS + 15, 120, 0);
+    imprimeLog(log_file, 3*MAX_PROCESSOS + 13, 120, 0);
 
     fclose(log_file);
     gotoxy(1, 3*MAX_PROCESSOS + 15);
 } 
 
 void imprimeGraficoInicio(Processo** processos, int n) {
-    printf("              Gráfico\n");
+    printf("              \033[34mGráfico\033[0m\n");
 
     for(int i = 0; i < n; i++) {
         printf("\033[33mProcesso #%ld | \033[0m\n", processos[i]->PID);
@@ -193,18 +191,19 @@ void imprimeTabelaEFilas(Processo** processos, int n, Processo* proc_atual, Fila
     gotoxy(1, n + 5);
     tabelaDeProcessos(processos, n);
 
-    printf("Fila de prioridade alta:\n");
+    printf("\033[34mFila de prioridade alta:\033[0m\n");
     mostrarFila(fila_alta);
-    printf("Fila de prioridade baixa:\n");
+    printf("\033[34mFila de prioridade baixa:\033[0m\n");
     mostrarFila(fila_baixa);
-    printf("Fila de IO de Disco:\n");
+    printf("\033[34mFila de IO de Disco:\033[0m\n");
     mostrarFila(fila_disco);
-    printf("Fila de IO de Fita:\n");
+    printf("\033[34mFila de IO de Fita:\033[0m\n");
     mostrarFila(fila_fita);
-    printf("Fila de IO de Impressora:\n");
+    printf("\033[34mFila de IO de Impressora:\033[0m\n");
     mostrarFila(fila_impressora);
 
-    printf("Processo na CPU: Processo #%ld\n\n", (proc_atual != (Processo*) NULL ? proc_atual->PID : -1) );
+    if (proc_atual != (Processo*) NULL) printf("\033[34mProcesso na CPU: \033[33mProcesso #%ld\033[0m\n\n", proc_atual->PID );
+    else printf("\033[34mProcesso na CPU:\033[31m Nenhum\033[0m\n\n" );
 }
 
 void atualizaFilasIO(Fila* fila_disco, Fila* fila_fita, Fila* fila_impressora) {
@@ -228,12 +227,12 @@ void imprimeFinal(Processo** processos, int n, int* t_finalizacoes) {
     gotoxy(1, n + 5);
     tabelaDeProcessos(processos, n);
 
-    printf("Fim do Escalonador\n");
+    printf("\033[31mFim do Escalonador\033[0m\n");
 
-    printf("\n\nTurnaround de cada processo:\n");
+    printf("\n\n\033[34mTurnaround de cada processo:\033[33m\n");
     for(int i = 0; i < n; i++) {
         Processo* proc = processos[i];
-        printf("Processo #%ld - %ds\n", proc->PID, t_finalizacoes[i] - proc->inicio);
+        printf("\033[33mProcesso #%ld\033[0m - %ds\n", proc->PID, t_finalizacoes[i] - proc->inicio);
     }
 }
 
@@ -254,6 +253,7 @@ void imprimeLog(FILE* log_file, int n_linhas, int x, int y) {
         
         if(count >= line_count - n_linhas) {
             gotoxy(x, y + log_count + 1);
+            printf("\033[K");
             printf("%s", s);
             log_count++;
         }
